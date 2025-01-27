@@ -18,12 +18,13 @@ class DrawingApp:
 
         # Настраиваем интерфейс
         self.sizes = [1, 2, 5, 10]  # Предопределенные размеры кисти
-        self.brush_size = tk.IntVar(value=self.sizes[0])  # Текущий размер кисти
+        self.brush_size = tk.IntVar(value=self.sizes[0])
         self.setup_ui()
 
         # Переменные для отслеживания движения мыши
         self.last_x, self.last_y = None, None
         self.pen_color = 'black'
+        self.previous_color = self.pen_color
 
         # Привязываем события к холсту
         self.canvas.bind('<B1-Motion>', self.paint)
@@ -44,6 +45,14 @@ class DrawingApp:
         # Кнопка "Сохранить"
         save_button = tk.Button(control_frame, text="Сохранить", command=self.save_image)
         save_button.pack(side=tk.LEFT)
+
+        # Кнопка "Ластик"
+        eraser_button = tk.Button(control_frame, text="Ластик", command=self.use_eraser)
+        eraser_button.pack(side=tk.LEFT)
+
+        # Кнопка "Кисть"
+        brush_button = tk.Button(control_frame, text="Кисть", command=self.use_brush)
+        brush_button.pack(side=tk.LEFT)
 
         # Выпадающий список для выбора размера кисти
         size_menu = tk.OptionMenu(control_frame, self.brush_size, *self.sizes)
@@ -74,7 +83,19 @@ class DrawingApp:
 
     def choose_color(self):
         # Открытие диалогового окна для выбора цвета
-        self.pen_color = colorchooser.askcolor(color=self.pen_color)[1]
+        color = colorchooser.askcolor(color=self.pen_color)[1]
+        if color:
+            self.pen_color = color
+            self.previous_color = self.pen_color
+
+    def use_eraser(self):
+        # Активируем ластик (устанавливаем цвет кисти в белый)
+        self.previous_color = self.pen_color
+        self.pen_color = "white"
+
+    def use_brush(self):
+        # Возвращаемся к предыдущему цвету кисти
+        self.pen_color = self.previous_color
 
     def save_image(self):
         # Сохранение изображения в формате PNG
