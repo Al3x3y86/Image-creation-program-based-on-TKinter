@@ -29,6 +29,7 @@ class DrawingApp:
         # Привязываем события к холсту
         self.canvas.bind('<B1-Motion>', self.paint)
         self.canvas.bind('<ButtonRelease-1>', self.reset)
+        self.canvas.bind('<Button-3>', self.pick_color)  # Пипетка (правая кнопка мыши)
 
     def setup_ui(self):
         control_frame = tk.Frame(self.root)
@@ -96,6 +97,16 @@ class DrawingApp:
     def use_brush(self):
         # Возвращаемся к предыдущему цвету кисти
         self.pen_color = self.previous_color
+
+    def pick_color(self, event):
+        # Определяем цвет пикселя на изображении и устанавливаем его как цвет кисти
+        x, y = event.x, event.y
+
+        # Проверяем, что координаты в пределах изображения
+        if 0 <= x < self.image.width and 0 <= y < self.image.height:
+            color = '#%02x%02x%02x' % self.image.getpixel((x, y))
+            self.pen_color = color
+            self.previous_color = color
 
     def save_image(self):
         # Сохранение изображения в формате PNG
